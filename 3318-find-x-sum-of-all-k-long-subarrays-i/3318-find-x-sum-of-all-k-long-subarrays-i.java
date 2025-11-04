@@ -7,29 +7,36 @@ class Solution {
         for(int i=0; i<k; i++){
             map.put(nums[i], map.getOrDefault(nums[i],0)+1);
         }
+        ans[0] = getXSum(map, x);
 
-        while(k <= n){
-            if(j!=0){
-                map.put(nums[k-1], map.getOrDefault(nums[k-1],0)+1);
-                map.put(nums[j-1], map.getOrDefault(nums[j-1],0)-1);
-                if(map.get(nums[j-1]) <=0) map.remove(nums[j-1]);
-            }
-            List<int[]> list = new ArrayList<>();
+        for(int i=k; i<n; i++){
 
-            for(var entry: map.entrySet()){
-                list.add(new int[]{entry.getValue(), entry.getKey()});
-            }
+            map.put(nums[i], map.getOrDefault(nums[i],0)+1);
+            map.put(nums[i-k], map.getOrDefault(nums[i-k],0)-1);
+            if(map.get(nums[i-k])<=0) map.remove(nums[i-k]);
 
-            list.sort((a,b)->{if(a[0] != b[0]) return b[0]-a[0];
-            return b[1]-a[1];});
-
-            int sum=0;
-            for(int i=0; i<Math.min(x, list.size()); i++){
-                sum += list.get(i)[0] * list.get(i)[1];
-            }
-            ans[j] = sum;
-            k++; j++;
+            j++;
+            ans[j] = getXSum(map,x);
         }
         return ans;
+    }
+
+    private int getXSum(HashMap<Integer,Integer> map, int x){
+        int sum = 0;
+
+        List<int[]> list = new ArrayList<>();
+
+        for(var entry: map.entrySet()){
+            list.add(new int[]{entry.getValue(), entry.getKey()});
+        }
+
+        list.sort((a,b)->{if(a[0] != b[0]) return b[0]-a[0]; 
+        return b[1]-a[1];
+        });
+
+        for(int i=0; i<Math.min(x, list.size()); i++){
+            sum += list.get(i)[0] * list.get(i)[1];
+        }
+        return sum;
     }
 }
